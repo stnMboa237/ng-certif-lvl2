@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { EMPTY, Observable, map } from 'rxjs';
+import { Observable, combineLatest, map, switchMap } from 'rxjs';
 import { LeagueUpdateService } from 'src/app/shared/service/league-update.service';
 
 @Component({
@@ -10,23 +10,51 @@ import { LeagueUpdateService } from 'src/app/shared/service/league-update.servic
     <div *ngIf="selectedCountry$ | async as country">
       <h3>country: {{ country }}</h3>
     </div>
+
+    <div *ngIf="leagueId$ | async as leagueId">
+      <h3>leagueId: {{ leagueId }}</h3>
+    </div>
+    <hr />
+    <div *ngIf="standing$ | async as standing">
+      <h3>standing</h3>
+      <h4>{{ standing | json }}</h4>
+    </div>
   `,
   styleUrls: ['./standing.component.css'],
 })
-export class StandingComponent implements OnInit {
+export class StandingComponent {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly leagueUpdateService = inject(LeagueUpdateService);
+  protected defaultCountry: string = 'England';
 
-  protected selectedCountry$: Observable<string | null> = EMPTY;
+  protected selectedCountry$: Observable<string | null> =
+    this.activatedRoute.paramMap.pipe(
+      map((params: ParamMap): string | null => {
+        const country = params.get('country');
+        return country !== null ? country : this.defaultCountry;
+      })
+    );
 
   protected year$: Observable<number> =
     this.leagueUpdateService.getCurrentSeasonYear();
 
-  ngOnInit(): void {
-    this.selectedCountry$ = this.activatedRoute.paramMap.pipe(
-      map((params: ParamMap): string | null => {
-        return params.get('country');
-      })
-    );
-  }
+  protected leagueId$: Observable<number> = combineLatest({
+    countryName: this.selectedCountry$,
+  }).pipe(
+    switchMap(({ countryName }) =>
+      this.leagueUpdateService.getLeagueId(countryName!)
+    )
+  );
+
+  protected seasonYear$: Observable<number> =
+    this.leagueUpdateService.getCurrentSeasonYear();
+
+  protected standing$: Observable<any> = combineLatest({
+    id: this.leagueId$,
+    season: this.seasonYear$,
+  }).pipe(
+    switchMap(({ id, season }) =>
+      this.leagueUpdateService.getLeagueStanding(id, season)
+    )
+  );
 }
