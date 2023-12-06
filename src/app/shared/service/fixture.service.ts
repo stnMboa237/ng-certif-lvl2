@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, of } from 'rxjs';
+import { EMPTY, Observable, catchError, map, of } from 'rxjs';
 import { Fixture } from 'src/app/models/fixture.interface';
 import { environment } from 'src/environments/environment.development';
 
@@ -11,7 +11,7 @@ export class FixtureService {
   private readonly httpClient = inject(HttpClient);
   protected maxLastGamesToRetrieve: number = 10;
 
-  getLastGames(teamId: number, seasonYear: number): Observable<Fixture[]> {
+  getLastFixtures(teamId: number, seasonYear: number): Observable<Fixture[]> {
     const storedValue = localStorage.getItem(
       `last_games_${teamId}_${seasonYear}`
     );
@@ -49,6 +49,10 @@ export class FixtureService {
             JSON.stringify(games)
           );
           return games;
+        }),
+        catchError((error) => {
+          console.log(error);
+          return EMPTY;
         })
       );
   }

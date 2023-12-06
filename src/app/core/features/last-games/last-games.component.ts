@@ -47,25 +47,28 @@ export class LastGamesComponent {
   protected seasonYear$: Observable<number> =
     this.standingService.getCurrentSeasonYear();
 
-  protected teamId$: Observable<number | null> =
-    this.activatedRoute.paramMap.pipe(
-      map((params: ParamMap): number | null => {
-        const routeData = params.get('id');
-        if (routeData) {
-          return +routeData;
-        }
-        return null;
-      })
-    );
+  protected teamId$: Observable<number> = this.activatedRoute.paramMap.pipe(
+    map((params: ParamMap): number => {
+      const routeData = params.get('id');
+      if (routeData) {
+        return +routeData;
+      }
+      return -1;
+    })
+  );
 
   protected lastFixtures$: Observable<Fixture[]> = combineLatest({
     year: this.seasonYear$,
     id: this.teamId$,
   }).pipe(
-    switchMap(({ year, id }) => this.fixtureService.getLastGames(id!, year))
+    switchMap(({ year, id }) => {
+      console.log('id = ' + id + ';  Year = ' + year);
+      return this.fixtureService.getLastFixtures(id, year);
+    })
   );
 
   goBack() {
-    this.router.navigate(['..'], { relativeTo: this.activatedRoute });
+    const url = localStorage.getItem('previousUrl');
+    this.router.navigate([url ? JSON.parse(url) : '/']);
   }
 }

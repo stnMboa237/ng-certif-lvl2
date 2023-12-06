@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Observable, combineLatest, map, switchMap } from 'rxjs';
+import { Country } from 'src/app/models/country.interface';
 import { StandingService } from 'src/app/shared/service/standing.service';
 
 @Component({
@@ -24,11 +25,7 @@ import { StandingService } from 'src/app/shared/service/standing.service';
               </tr>
             </thead>
             <tbody>
-              <tr
-                class="team-row"
-                *ngFor="let teamStandingInfo of standing"
-                (click)="onSelectTeam(teamStandingInfo.teamId)"
-              >
+              <tr class="team-row" *ngFor="let teamStandingInfo of standing">
                 <td>{{ teamStandingInfo.rank }}</td>
                 <td>
                   <img
@@ -38,7 +35,11 @@ import { StandingService } from 'src/app/shared/service/standing.service';
                     width="30px"
                   />
                 </td>
-                <td>{{ teamStandingInfo.teamName }}</td>
+                <td>
+                  <a (click)="onSelectTeam(teamStandingInfo.teamId)">{{
+                    teamStandingInfo.teamName
+                  }}</a>
+                </td>
                 <td>{{ teamStandingInfo.games }}</td>
                 <td>{{ teamStandingInfo.win }}</td>
                 <td>{{ teamStandingInfo.lose }}</td>
@@ -60,16 +61,42 @@ export class StandingComponent {
   private readonly router = inject(Router);
   protected defaultCountry: string = 'England';
 
-  protected selectedCountry$: Observable<string | null> =
-    this.activatedRoute.paramMap.pipe(
-      map((params: ParamMap): string | null => {
-        const country = params.get('country');
-        if (country) {
-          return country;
+  onSelectTeam(teamId: number) {
+    const url = this.router.routerState.snapshot.url;
+    localStorage.setItem('previousUrl', JSON.stringify(url));
+    this.StandingService.previousUrl$.next(url);
+    this.router.navigate(['/fixtures', teamId]);
+  }
+
+  protected countries$: Observable<Country[]> =
+    this.StandingService.getCountries();
+
+  protected country$: Observable<string> = this.activatedRoute.paramMap.pipe(
+    map((params: ParamMap): string => {
+      const country = params.get('country');
+      if (country) {
+        return country;
+      }
+      return this.defaultCountry;
+    })
+  );
+
+  protected selectedCountry$: Observable<string> = combineLatest({
+    countries: this.countries$,
+    country: this.country$,
+  }).pipe(
+    map(({ countries, country }) => {
+      let result: string = '';
+      countries.forEach((element) => {
+        if (element.name.toLowerCase() === country.toLowerCase()) {
+          result = element.name;
+          return element.name;
         }
-        return this.defaultCountry;
-      })
-    );
+        return result;
+      });
+      return result;
+    })
+  );
 
   protected year$: Observable<number> =
     this.StandingService.getCurrentSeasonYear();
@@ -93,8 +120,4 @@ export class StandingComponent {
       this.StandingService.getLeagueStanding(id, season)
     )
   );
-
-  onSelectTeam(teamId: number) {
-    this.router.navigate(['/fixture', teamId]);
-  }
 }

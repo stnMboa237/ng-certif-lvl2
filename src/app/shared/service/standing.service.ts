@@ -1,9 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, of } from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, catchError, map, of } from 'rxjs';
 import { CountryLeagueInfo } from 'src/app/models/country-league-info.interface';
 import { Country } from 'src/app/models/country.interface';
-import { League } from 'src/app/models/league.interface';
 import { TeamStandingInfo } from 'src/app/models/team-standing-info.interface';
 import { environment } from 'src/environments/environment.development';
 
@@ -12,6 +11,7 @@ import { environment } from 'src/environments/environment.development';
 })
 export class StandingService {
   private readonly httpClient = inject(HttpClient);
+  previousUrl$ = new BehaviorSubject<string>('');
 
   getLeagueStanding(
     leagueId: number,
@@ -57,6 +57,10 @@ export class StandingService {
             JSON.stringify(teamStanding)
           );
           return teamStanding;
+        }),
+        catchError((error) => {
+          console.log(error);
+          return EMPTY;
         })
       );
   }
@@ -91,6 +95,10 @@ export class StandingService {
             JSON.stringify(valueToStore)
           );
           return valueToStore.leagueId;
+        }),
+        catchError((error) => {
+          console.log(error);
+          return EMPTY;
         })
       );
   }
@@ -125,14 +133,12 @@ export class StandingService {
             });
             localStorage.setItem('countries', JSON.stringify(countryList));
             return countryList;
+          }),
+          catchError((error) => {
+            console.log(error);
+            return EMPTY;
           })
         )
     );
   }
-}
-
-interface Response {
-  response: {
-    league: League;
-  };
 }

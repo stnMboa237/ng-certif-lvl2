@@ -9,33 +9,18 @@ import { StandingService } from 'src/app/shared/service/standing.service';
   template: `
     <div class="container">
       <div class="masthead">
-        <h3 class="text-muted">FOOTBALL UPDATES</h3>
+        <h3 class="text-muted" (click)="goHome()">FOOTBALL UPDATES</h3>
         <ng-container *ngIf="countries$ | async as countries">
           <nav class="header-container">
             <ul class="nav nav-justified">
               <li *ngFor="let country of countries">
-                <!-- <button
-                  class="btn bnt-default"
-                  type="button"
-                  (click)="onSelectCountry(country.name)"
-                >
-                  {{ country.name }}
-                </button> -->
                 <a
                   class="header-link"
+                  [routerLink]="['/standing', country.name]"
                   routerLinkActive="active"
-                  (click)="onSelectCountry(country.name)"
                   >{{ country.name }}</a
                 >
               </li>
-              <!-- <li
-              [routerLinkActive]="'active'"
-              [routerLinkActiveOptions]="{ exact: true }"
-            >
-              <a id="spainSelect" [routerLink]="['/standing', 'spain']"
-                >Spain</a
-              >
-            </li>-->
             </ul>
           </nav>
         </ng-container>
@@ -53,7 +38,7 @@ export class HeaderComponent implements OnInit {
     this.countries$ = this.StandingService.getCountries();
   }
 
-  onSelectCountry(name: string) {
-    this.router.navigate(['/standing', name]);
+  goHome() {
+    this.router.navigate(['/']);
   }
 }
