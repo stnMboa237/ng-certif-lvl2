@@ -1,7 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Observable, combineLatest, map, switchMap } from 'rxjs';
-import { GameService } from 'src/app/shared/service/game.service';
+import { Fixture } from 'src/app/models/fixture.interface';
+import { FixtureService } from 'src/app/shared/service/fixture.service';
 import { StandingService } from 'src/app/shared/service/standing.service';
 
 @Component({
@@ -9,12 +10,28 @@ import { StandingService } from 'src/app/shared/service/standing.service';
   template: `
     <div class="row game-table">
       <div class="col-xs-12 col-md-12">
-        <div *ngIf="teamId$ | async as id">
-          <h4>Team Id = {{ id }}</h4>
-        </div>
+        <div *ngIf="lastFixtures$ | async as fixtures">
+          <table class="table borderless">
+            <tbody>
+              <tr *ngFor="let fixture of fixtures">
+                <td>
+                  <img [src]="fixture.homeLogo" alt="team-logo" width="30px" />
+                </td>
+                <td>{{ fixture.homeTeamName }}</td>
+                <td>{{ fixture.homeGoals }}</td>
+                <td>-</td>
+                <td>{{ fixture.awayGoals }}</td>
+                <td>{{ fixture.awayTeamName }}</td>
+                <td>
+                  <img [src]="fixture.awayLogo" alt="team-logo" width="30px" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-        <div *ngIf="lastGames$ | async as games">
-          <h4>{{ games | json }}</h4>
+          <button class="btn btn-primary" type="button" (click)="goBack()">
+            Back
+          </button>
         </div>
       </div>
     </div>
@@ -23,8 +40,9 @@ import { StandingService } from 'src/app/shared/service/standing.service';
 })
 export class LastGamesComponent {
   private readonly standingService = inject(StandingService);
-  private readonly gameService = inject(GameService);
+  private readonly fixtureService = inject(FixtureService);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   protected seasonYear$: Observable<number> =
     this.standingService.getCurrentSeasonYear();
@@ -40,10 +58,14 @@ export class LastGamesComponent {
       })
     );
 
-  protected lastGames$: Observable<any> = combineLatest({
+  protected lastFixtures$: Observable<Fixture[]> = combineLatest({
     year: this.seasonYear$,
     id: this.teamId$,
   }).pipe(
-    switchMap(({ year, id }) => this.gameService.getLastGames(id!, year))
+    switchMap(({ year, id }) => this.fixtureService.getLastGames(id!, year))
   );
+
+  goBack() {
+    this.router.navigate(['..'], { relativeTo: this.activatedRoute });
+  }
 }

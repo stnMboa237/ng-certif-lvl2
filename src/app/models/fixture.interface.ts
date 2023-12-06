@@ -1,4 +1,4 @@
-export interface GameInfo {
+export interface Fixture {
   homeLogo: string;
   homeTeamName: string;
   homeGoals: number;

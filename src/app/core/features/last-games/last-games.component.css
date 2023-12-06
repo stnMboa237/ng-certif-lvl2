@@ -1,3 +1,15 @@
 .game-table {
   margin-top: 50px;
 }
+
+.borderless td, .borderless th {
+  border: none;
+}
+
+.home-name {
+  margin-left: 20px;
+}
+
+.away-name {
+  margin-right: 20px;
+}

@@ -1,25 +1,25 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, of } from 'rxjs';
-import { GameInfo } from 'src/app/models/game-info.interface';
+import { Fixture } from 'src/app/models/fixture.interface';
 import { environment } from 'src/environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
 })
-export class GameService {
+export class FixtureService {
   private readonly httpClient = inject(HttpClient);
   protected maxLastGamesToRetrieve: number = 10;
 
-  getLastGames(teamId: number, seasonYear: number): Observable<GameInfo[]> {
+  getLastGames(teamId: number, seasonYear: number): Observable<Fixture[]> {
     const storedValue = localStorage.getItem(
       `last_games_${teamId}_${seasonYear}`
     );
     if (
       storedValue !== null &&
-      (JSON.parse(storedValue) as GameInfo[]).length > 0
+      (JSON.parse(storedValue) as Fixture[]).length > 0
     ) {
-      return of(JSON.parse(storedValue) as GameInfo[]);
+      return of(JSON.parse(storedValue) as Fixture[]);
     }
 
     const httpParams = new HttpParams()
@@ -33,7 +33,7 @@ export class GameService {
       .pipe(
         map((resp: any) => {
           const data = resp['response'];
-          let games: GameInfo[] = [];
+          let games: Fixture[] = [];
           for (let i = 0; i < data.length; i++) {
             games.push({
               homeLogo: data[i]['teams']['home']['logo'],

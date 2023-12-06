@@ -1,3 +1,7 @@
 .standing-table {
   margin-top: 50px;
 }
+
+.team-row {
+  cursor: pointer;
+}

@@ -25,6 +25,7 @@ import { StandingService } from 'src/app/shared/service/standing.service';
             </thead>
             <tbody>
               <tr
+                class="team-row"
                 *ngFor="let teamStandingInfo of standing"
                 (click)="onSelectTeam(teamStandingInfo.teamId)"
               >
@@ -61,7 +62,13 @@ export class StandingComponent {
 
   protected selectedCountry$: Observable<string | null> =
     this.activatedRoute.paramMap.pipe(
-      map((params: ParamMap): string | null => params.get('country'))
+      map((params: ParamMap): string | null => {
+        const country = params.get('country');
+        if (country) {
+          return country;
+        }
+        return this.defaultCountry;
+      })
     );
 
   protected year$: Observable<number> =
@@ -88,6 +95,6 @@ export class StandingComponent {
   );
 
   onSelectTeam(teamId: number) {
-    this.router.navigate(['/games', teamId]);
+    this.router.navigate(['/fixture', teamId]);
   }
 }
