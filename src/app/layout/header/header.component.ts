@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { EMPTY, Observable } from 'rxjs';
 import { Country } from 'src/app/models/country.interface';
-import { LeagueUpdateService } from 'src/app/shared/service/league-update.service';
+import { StandingService } from 'src/app/shared/service/standing.service';
 
 @Component({
   selector: 'ng-header',
@@ -45,12 +45,12 @@ import { LeagueUpdateService } from 'src/app/shared/service/league-update.servic
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
-  private readonly leagueUpdateService = inject(LeagueUpdateService);
+  private readonly StandingService = inject(StandingService);
   private readonly router = inject(Router);
   protected countries$: Observable<Array<Country>> = EMPTY;
 
   ngOnInit(): void {
-    this.countries$ = this.leagueUpdateService.getCountries();
+    this.countries$ = this.StandingService.getCountries();
   }
 
   onSelectCountry(name: string) {

@@ -8,4 +8,5 @@ export interface TeamStandingInfo {
   draw: number;
   goalDifference: number;
   points: number;
+  teamId: number;
 }

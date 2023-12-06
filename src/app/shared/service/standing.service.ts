@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment.development';
 @Injectable({
   providedIn: 'root',
 })
-export class LeagueUpdateService {
+export class StandingService {
   private readonly httpClient = inject(HttpClient);
 
   getLeagueStanding(
@@ -48,6 +48,7 @@ export class LeagueUpdateService {
               rank: teamInfo['rank'],
               teamName: teamInfo['team']['name'],
               win: teamInfo['all']['win'],
+              teamId: teamInfo['team']['id'],
             };
             teamStanding.push(t);
           }

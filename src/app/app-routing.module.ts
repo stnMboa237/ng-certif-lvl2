@@ -6,7 +6,7 @@ import { StandingComponent } from './core/features/standing/standing.component';
 const appRoutes: Routes = [
   { path: 'standing', component: StandingComponent, pathMatch: 'full' },
   { path: 'standing/:country', component: StandingComponent },
-  { path: 'games', component: LastGamesComponent },
+  { path: 'games/:id', component: LastGamesComponent },
   { path: '**', redirectTo: '/standing' },
 ];
 
