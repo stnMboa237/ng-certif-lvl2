@@ -1,9 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { Observable, map, of } from 'rxjs';
+import { CountryLeagueInfo } from 'src/app/models/country-league-info.interface';
 import { Country } from 'src/app/models/country.interface';
 import { League } from 'src/app/models/league.interface';
+import { TeamStandingInfo } from 'src/app/models/team-standing-info.interface';
 import { environment } from 'src/environments/environment.development';
 
 @Injectable({
@@ -11,20 +12,19 @@ import { environment } from 'src/environments/environment.development';
 })
 export class LeagueUpdateService {
   private readonly httpClient = inject(HttpClient);
-  private readonly router = inject(Router);
-  protected countryLeaguesIds: Array<{
-    countryName: string;
-    leagueId: number;
-  }> = [];
 
   getLeagueStanding(
     leagueId: number,
     year: number
   ): Observable<TeamStandingInfo[]> {
-    /*
-      TO DO
-      store the league data into the local storage if it already exists for the current year
-    */
+    const storedValue = localStorage.getItem(`standing_${leagueId}_${year}`);
+    if (
+      storedValue !== null &&
+      (JSON.parse(storedValue) as TeamStandingInfo[]).length > 0
+    ) {
+      return of(JSON.parse(storedValue) as TeamStandingInfo[]);
+    }
+
     const httpParams = new HttpParams()
       .set('league', `${leagueId}`)
       .set('season', `${year}`);
@@ -40,17 +40,21 @@ export class LeagueUpdateService {
             let teamInfo: any = data[i];
             let t: TeamStandingInfo = {
               draw: teamInfo['all']['draw'],
-              games: 0,
-              goalDifference: 0,
-              logo: '',
-              loose: 0,
-              points: 0,
-              rank: 0,
-              teamName: '',
-              win: 0,
+              games: teamInfo['all']['played'],
+              goalDifference: teamInfo['goalsDiff'],
+              logo: teamInfo['team']['logo'],
+              lose: teamInfo['all']['lose'],
+              points: teamInfo['points'],
+              rank: teamInfo['rank'],
+              teamName: teamInfo['team']['name'],
+              win: teamInfo['all']['win'],
             };
             teamStanding.push(t);
           }
+          localStorage.setItem(
+            `standing_${leagueId}_${year}`,
+            JSON.stringify(teamStanding)
+          );
           return teamStanding;
         })
       );
@@ -66,7 +70,7 @@ export class LeagueUpdateService {
   getLeagueId(countryName: string): Observable<number> {
     const storedValue = localStorage.getItem(`${countryName}LeagueId`);
     if (storedValue !== null && JSON.parse(storedValue)) {
-      const value = JSON.parse(storedValue) as CountryLeagueId;
+      const value = JSON.parse(storedValue) as CountryLeagueInfo;
       return of(value.leagueId);
     }
 
@@ -76,7 +80,7 @@ export class LeagueUpdateService {
       })
       .pipe(
         map((resp: any) => {
-          let valueToStore: CountryLeagueId = {
+          let valueToStore: CountryLeagueInfo = {
             leagueId: resp['response'][0]['league']['id'],
             country: resp['response'][0]['country']['name'],
             leagueName: resp['response'][0]['league']['name'],
@@ -85,7 +89,7 @@ export class LeagueUpdateService {
             `${countryName}LeagueId`,
             JSON.stringify(valueToStore)
           );
-          return valueToStore.leagueId; //resp['response'][0]['league']['id'];
+          return valueToStore.leagueId;
         })
       );
   }
@@ -130,22 +134,4 @@ interface Response {
   response: {
     league: League;
   };
-}
-
-interface CountryLeagueId {
-  country: string;
-  leagueId: number;
-  leagueName: string;
-}
-
-interface TeamStandingInfo {
-  rank: number;
-  logo: string;
-  teamName: string;
-  games: number;
-  win: number;
-  loose: number;
-  draw: number;
-  goalDifference: number;
-  points: number;
 }

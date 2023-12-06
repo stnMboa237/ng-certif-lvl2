@@ -3,17 +3,17 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { LastGamesComponent } from './core/features/last-games/last-games.component';
+import { StandingComponent } from './core/features/standing/standing.component';
 import { HandleRequestInterceptor } from './core/interceptor/handle-request.interceptor';
 import { HeaderComponent } from './layout/header/header.component';
-import { StandingDetailsComponent } from './layout/standing-details/standing-details.component';
-import { StandingComponent } from './layout/standing/standing.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     StandingComponent,
-    StandingDetailsComponent,
+    LastGamesComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [
