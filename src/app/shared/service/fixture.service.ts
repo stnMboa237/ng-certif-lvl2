@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { EMPTY, Observable, catchError, map, of } from 'rxjs';
+import { FixtureHttpResponse } from 'src/app/models/fixture-http-response.interface';
 import { Fixture } from 'src/app/models/fixture.interface';
 import { environment } from 'src/environments/environment.development';
 
@@ -27,21 +28,22 @@ export class FixtureService {
       .set('season', seasonYear)
       .set('last', this.maxLastGamesToRetrieve);
     return this.httpClient
-      .get(`${environment.fixtures}`, {
+      .get<FixtureHttpResponse>(`${environment.fixtures}`, {
         params: httpParams,
       })
       .pipe(
-        map((resp: any) => {
+        map((resp: FixtureHttpResponse) => {
           const data = resp['response'];
+          debugger;
           let games: Fixture[] = [];
           for (let i = 0; i < data.length; i++) {
             games.push({
-              homeLogo: data[i]['teams']['home']['logo'],
-              homeTeamName: data[i]['teams']['home']['name'],
-              homeGoals: data[i]['goals']['home'],
-              awayLogo: data[i]['teams']['away']['logo'],
-              awayTeamName: data[i]['teams']['away']['name'],
-              awayGoals: data[i]['goals']['away'],
+              homeLogo: data[i].teams.home.logo,
+              homeTeamName: data[i].teams.home.name,
+              homeGoals: data[i].goals.home,
+              awayLogo: data[i].teams.away.logo,
+              awayTeamName: data[i].teams.away.name,
+              awayGoals: data[i].goals.away,
             });
           }
           localStorage.setItem(

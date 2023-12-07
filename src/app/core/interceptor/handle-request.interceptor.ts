@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment.development';
 
 export class HandleRequestInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler) {
+    debugger;
     const modifiedRequest = request.clone({
       setHeaders: {
         'x-rapidapi-key': `${environment.apiKey}`,
