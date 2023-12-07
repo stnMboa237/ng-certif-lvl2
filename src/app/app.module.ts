@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LastGamesComponent } from './core/features/last-games/last-games.component';
+import { FixturesComponent } from './core/features/fixtures/fixtures.component';
 import { StandingComponent } from './core/features/standing/standing.component';
 import { HomeComponent } from './core/home/home.component';
 import { HandleRequestInterceptor } from './core/interceptor/handle-request.interceptor';
@@ -14,8 +14,8 @@ import { HeaderComponent } from './layout/header/header.component';
     AppComponent,
     HomeComponent,
     HeaderComponent,
-    LastGamesComponent,
     StandingComponent,
+    FixturesComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [

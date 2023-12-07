@@ -6,7 +6,7 @@ import { FixtureService } from 'src/app/shared/service/fixture.service';
 import { StandingService } from 'src/app/shared/service/standing.service';
 
 @Component({
-  selector: 'ng-last-games',
+  selector: 'ng-fixtures',
   template: `
     <div class="row game-table">
       <div class="col-xs-12 col-md-12">
@@ -36,9 +36,9 @@ import { StandingService } from 'src/app/shared/service/standing.service';
       </div>
     </div>
   `,
-  styleUrls: ['./last-games.component.css'],
+  styleUrls: ['./fixtures.component.css'],
 })
-export class LastGamesComponent {
+export class FixturesComponent {
   private readonly standingService = inject(StandingService);
   private readonly fixtureService = inject(FixtureService);
   private readonly activatedRoute = inject(ActivatedRoute);

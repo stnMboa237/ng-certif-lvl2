@@ -30,12 +30,12 @@ import { StandingService } from 'src/app/shared/service/standing.service';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
-  private readonly StandingService = inject(StandingService);
+  private readonly standingService = inject(StandingService);
   private readonly router = inject(Router);
   protected countries$: Observable<Array<Country>> = EMPTY;
 
   ngOnInit(): void {
-    this.countries$ = this.StandingService.getCountries();
+    this.countries$ = this.standingService.getCountries();
   }
 
   goHome() {
