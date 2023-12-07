@@ -1,5 +1,11 @@
+import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  ParamMap,
+  Router,
+  RouterModule,
+} from '@angular/router';
 import { Observable, combineLatest, map, switchMap } from 'rxjs';
 import { Country } from 'src/app/models/country.interface';
 import { DefaultCountry } from 'src/app/models/default-country.interface';
@@ -8,6 +14,8 @@ import { StandingService } from 'src/app/shared/service/standing.service';
 import { environment } from 'src/environments/environment.development';
 
 @Component({
+  standalone: true,
+  imports: [RouterModule, NgIf, AsyncPipe, NgFor],
   selector: 'ng-standing',
   template: `
     <ng-container *ngIf="standing$ | async as standing">

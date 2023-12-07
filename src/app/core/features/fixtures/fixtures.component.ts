@@ -1,11 +1,19 @@
+import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  ParamMap,
+  Router,
+  RouterModule,
+} from '@angular/router';
 import { Observable, combineLatest, map, switchMap } from 'rxjs';
 import { Fixture } from 'src/app/models/fixture.interface';
 import { FixtureService } from 'src/app/shared/service/fixture.service';
 import { StandingService } from 'src/app/shared/service/standing.service';
 
 @Component({
+  standalone: true,
+  imports: [RouterModule, NgFor, NgIf, AsyncPipe],
   selector: 'ng-fixtures',
   template: `
     <div class="row game-table">

@@ -1,10 +1,13 @@
+import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { EMPTY, Observable } from 'rxjs';
 import { Country } from 'src/app/models/country.interface';
 import { StandingService } from 'src/app/shared/service/standing.service';
 
 @Component({
+  standalone: true,
+  imports: [NgIf, AsyncPipe, NgFor, RouterModule],
   selector: 'ng-header',
   template: `
     <div class="container">
