@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable, catchError, map, of } from 'rxjs';
 import { CountryHttpResponse } from 'src/app/models/country-http-response.interface';
@@ -6,10 +6,10 @@ import { CountryLeagueInfo } from 'src/app/models/country-league-info.interface'
 import { Country } from 'src/app/models/country.interface';
 import { DefaultCountry } from 'src/app/models/default-country.interface';
 import { LeagueHttpResponse } from 'src/app/models/league-http-response.interface';
-import { LeagueIndexResponseBody } from 'src/app/models/league-index-response-body.interface';
 import { LeagueStanding } from 'src/app/models/league-standing.interface';
 import { StandingHttpResponse } from 'src/app/models/standing-http-response.interface';
 import { TeamStandingInfo } from 'src/app/models/team-standing-info.interface';
+import { LeagueIndexResponseBody } from 'src/app/models/test.interfqce';
 import { environment } from 'src/environments/environment.development';
 
 @Injectable({
@@ -36,6 +36,10 @@ export class StandingService {
       .set('season', `${year}`);
     return this.httpClient
       .get<StandingHttpResponse>(`${environment.standings}`, {
+        headers: new HttpHeaders({
+          'x-rapidapi-key': `${environment.apiKey}`,
+        }),
+
         params: httpParams,
       })
       .pipe(
@@ -90,6 +94,10 @@ export class StandingService {
 
     return this.httpClient
       .get<LeagueHttpResponse>(`${environment.leaguesUrl}`, {
+        headers: new HttpHeaders({
+          'x-rapidapi-key': `${environment.apiKey}`,
+        }),
+
         params: new HttpParams().append('search', countryName),
       })
       .pipe(
@@ -140,7 +148,11 @@ export class StandingService {
     }
 
     return this.httpClient
-      .get<CountryHttpResponse>(`${environment.countries}`)
+      .get<CountryHttpResponse>(`${environment.countries}`, {
+        headers: new HttpHeaders({
+          'x-rapidapi-key': `${environment.apiKey}`,
+        }),
+      })
       .pipe(
         map((resp: CountryHttpResponse): Country[] => {
           let countryList: Array<Country> = [];

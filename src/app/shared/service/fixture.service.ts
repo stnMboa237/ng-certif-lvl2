@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { EMPTY, Observable, catchError, map, of } from 'rxjs';
 import { FixtureHttpResponse } from 'src/app/models/fixture-http-response.interface';
@@ -29,12 +29,15 @@ export class FixtureService {
       .set('last', this.maxLastGamesToRetrieve);
     return this.httpClient
       .get<FixtureHttpResponse>(`${environment.fixtures}`, {
+        headers: new HttpHeaders({
+          'x-rapidapi-key': `${environment.apiKey}`,
+        }),
+
         params: httpParams,
       })
       .pipe(
         map((resp: FixtureHttpResponse) => {
           const data = resp['response'];
-          debugger;
           let games: Fixture[] = [];
           for (let i = 0; i < data.length; i++) {
             games.push({
