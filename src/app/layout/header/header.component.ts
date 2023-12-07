@@ -18,6 +18,7 @@ import { StandingService } from 'src/app/shared/service/standing.service';
             <ul class="nav nav-justified">
               <li *ngFor="let country of countries">
                 <a
+                  [id]="country.name + 'Select'"
                   class="header-link"
                   [routerLink]="['/standing', country.name]"
                   routerLinkActive="active"

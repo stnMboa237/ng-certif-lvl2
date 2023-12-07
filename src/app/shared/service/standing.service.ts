@@ -6,10 +6,10 @@ import { CountryLeagueInfo } from 'src/app/models/country-league-info.interface'
 import { Country } from 'src/app/models/country.interface';
 import { DefaultCountry } from 'src/app/models/default-country.interface';
 import { LeagueHttpResponse } from 'src/app/models/league-http-response.interface';
+import { LeagueIndexResponseBody } from 'src/app/models/league-index-response-body.interface.ts';
 import { LeagueStanding } from 'src/app/models/league-standing.interface';
 import { StandingHttpResponse } from 'src/app/models/standing-http-response.interface';
 import { TeamStandingInfo } from 'src/app/models/team-standing-info.interface';
-import { LeagueIndexResponseBody } from 'src/app/models/test.interfqce';
 import { environment } from 'src/environments/environment.development';
 
 @Injectable({
