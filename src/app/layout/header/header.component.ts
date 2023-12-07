@@ -9,7 +9,7 @@ import { StandingService } from 'src/app/shared/service/standing.service';
   template: `
     <div class="container">
       <div class="masthead">
-        <h3 class="text-muted" (click)="goHome()">FOOTBALL UPDATES</h3>
+        <h3 class="text-muted">FOOTBALL UPDATES</h3>
         <ng-container *ngIf="countries$ | async as countries">
           <nav class="header-container">
             <ul class="nav nav-justified">
@@ -36,9 +36,5 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.countries$ = this.standingService.getCountries();
-  }
-
-  goHome() {
-    this.router.navigate(['/']);
   }
 }

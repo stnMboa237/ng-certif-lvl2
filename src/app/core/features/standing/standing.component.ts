@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Observable, combineLatest, map, switchMap } from 'rxjs';
 import { Country } from 'src/app/models/country.interface';
+import { TeamStandingInfo } from 'src/app/models/team-standing-info.interface';
 import { StandingService } from 'src/app/shared/service/standing.service';
 
 @Component({
@@ -59,14 +60,7 @@ export class StandingComponent {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly StandingService = inject(StandingService);
   private readonly router = inject(Router);
-  protected defaultCountry: string = 'England';
-
-  onSelectTeam(teamId: number) {
-    const url = this.router.routerState.snapshot.url;
-    localStorage.setItem('previousUrl', JSON.stringify(url));
-    this.StandingService.previousUrl$.next(url);
-    this.router.navigate(['/fixtures', teamId]);
-  }
+  protected noCountry: string = '';
 
   protected countries$: Observable<Country[]> =
     this.StandingService.getCountries();
@@ -77,7 +71,7 @@ export class StandingComponent {
       if (country) {
         return country;
       }
-      return this.defaultCountry;
+      return this.noCountry;
     })
   );
 
@@ -105,14 +99,14 @@ export class StandingComponent {
     countryName: this.selectedCountry$,
   }).pipe(
     switchMap(({ countryName }) =>
-      this.StandingService.getLeagueId(countryName!)
+      this.StandingService.getLeagueId(countryName)
     )
   );
 
   protected seasonYear$: Observable<number> =
     this.StandingService.getCurrentSeasonYear();
 
-  protected standing$: Observable<any> = combineLatest({
+  protected standing$: Observable<TeamStandingInfo[]> = combineLatest({
     id: this.leagueId$,
     season: this.seasonYear$,
   }).pipe(
@@ -120,4 +114,11 @@ export class StandingComponent {
       this.StandingService.getLeagueStanding(id, season)
     )
   );
+
+  onSelectTeam(teamId: number) {
+    const url = this.router.routerState.snapshot.url;
+    localStorage.setItem('previousUrl', JSON.stringify(url));
+    this.StandingService.previousUrl$.next(url);
+    this.router.navigate(['/fixtures', teamId]);
+  }
 }

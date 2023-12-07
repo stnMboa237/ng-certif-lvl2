@@ -1,8 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable, catchError, map, of } from 'rxjs';
+import { CountryHttpResponse } from 'src/app/models/country-http-response.interface';
 import { CountryLeagueInfo } from 'src/app/models/country-league-info.interface';
 import { Country } from 'src/app/models/country.interface';
+import { LeagueHttpResponse } from 'src/app/models/league-http-response.interface';
 import { TeamStandingInfo } from 'src/app/models/team-standing-info.interface';
 import { environment } from 'src/environments/environment.development';
 
@@ -80,11 +82,14 @@ export class StandingService {
     }
 
     return this.httpClient
-      .get(`${environment.leaguesUrl}`, {
+      .get<LeagueHttpResponse>(`${environment.leaguesUrl}`, {
         params: new HttpParams().append('search', countryName),
       })
       .pipe(
-        map((resp: any) => {
+        // map((resp: any) => resp['response']),
+        // filter((leagues: any) => leagues.find((x: any) => x['league']['name']==='Premier League')),
+        map((resp: LeagueHttpResponse): number => {
+          const data = resp['response'];
           let valueToStore: CountryLeagueInfo = {
             leagueId: resp['response'][0]['league']['id'],
             country: resp['response'][0]['country']['name'],
@@ -118,27 +123,24 @@ export class StandingService {
       'france',
       'italy',
     ];
-    return (
-      this.httpClient
-        .get(`${environment.countries}`)
-        // TO DO: REMOVE type 'any' !!! and use rxjs to filter countries
-        .pipe(
-          map((resp: any) => {
-            let countryList: Array<Country> = [];
-            const data = resp['response'];
-            data.forEach((c: Country) => {
-              if (countryCheckList.includes(c.name.toLowerCase())) {
-                countryList.push(c);
-              }
-            });
-            localStorage.setItem('countries', JSON.stringify(countryList));
-            return countryList;
-          }),
-          catchError((error) => {
-            console.log(error);
-            return EMPTY;
-          })
-        )
-    );
+    return this.httpClient
+      .get<CountryHttpResponse>(`${environment.countries}`)
+      .pipe(
+        map((resp: CountryHttpResponse): Country[] => {
+          let countryList: Array<Country> = [];
+          let data = resp.response;
+          data.forEach((c: { country: Country }) => {
+            if (countryCheckList.includes(c.country.name.toLowerCase())) {
+              countryList.push(c.country);
+            }
+          });
+          localStorage.setItem('countries', JSON.stringify(countryList));
+          return countryList;
+        }),
+        catchError((error) => {
+          console.log(error);
+          return EMPTY;
+        })
+      );
   }
 }

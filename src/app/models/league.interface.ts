@@ -3,4 +3,5 @@ export interface League {
   name: string;
   type: string;
   logo: string;
+  country: string;
 }
