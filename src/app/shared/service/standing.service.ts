@@ -4,7 +4,9 @@ import { BehaviorSubject, EMPTY, Observable, catchError, map, of } from 'rxjs';
 import { CountryHttpResponse } from 'src/app/models/country-http-response.interface';
 import { CountryLeagueInfo } from 'src/app/models/country-league-info.interface';
 import { Country } from 'src/app/models/country.interface';
+import { DefaultCountry } from 'src/app/models/default-country.interface';
 import { LeagueHttpResponse } from 'src/app/models/league-http-response.interface';
+import { LeagueIndexResponseBody } from 'src/app/models/league-index-response-body.interface';
 import { TeamStandingInfo } from 'src/app/models/team-standing-info.interface';
 import { environment } from 'src/environments/environment.development';
 
@@ -74,7 +76,10 @@ export class StandingService {
     return of(result);
   }
 
-  getLeagueId(countryName: string): Observable<number> {
+  getLeagueId(
+    countryName: string,
+    leagueDescription?: string
+  ): Observable<number> {
     const storedValue = localStorage.getItem(`${countryName}LeagueId`);
     if (storedValue !== null && JSON.parse(storedValue)) {
       const value = JSON.parse(storedValue) as CountryLeagueInfo;
@@ -86,15 +91,30 @@ export class StandingService {
         params: new HttpParams().append('search', countryName),
       })
       .pipe(
-        // map((resp: any) => resp['response']),
-        // filter((leagues: any) => leagues.find((x: any) => x['league']['name']==='Premier League')),
         map((resp: LeagueHttpResponse): number => {
-          const data = resp['response'];
-          let valueToStore: CountryLeagueInfo = {
-            leagueId: resp['response'][0]['league']['id'],
-            country: resp['response'][0]['country']['name'],
-            leagueName: resp['response'][0]['league']['name'],
-          };
+          let valueToStore: CountryLeagueInfo;
+          const filteredInfo: LeagueIndexResponseBody | undefined = resp[
+            'response'
+          ].find(
+            (x) =>
+              x['league']['name'].toLowerCase() ===
+              leagueDescription?.toLowerCase()
+          );
+
+          if (filteredInfo) {
+            valueToStore = {
+              leagueId: filteredInfo['league']['id'],
+              country: filteredInfo['country']['name'],
+              leagueName: filteredInfo['league']['name'],
+            };
+          } else {
+            valueToStore = {
+              leagueId: resp['response'][0]['league']['id'],
+              country: resp['response'][0]['country']['name'],
+              leagueName: resp['response'][0]['league']['name'],
+            };
+          }
+
           localStorage.setItem(
             `${countryName}LeagueId`,
             JSON.stringify(valueToStore)
@@ -116,22 +136,20 @@ export class StandingService {
     ) {
       return of(JSON.parse(storedValue) as Country[]);
     }
-    const countryCheckList: Array<string> = [
-      'england',
-      'spain',
-      'germany',
-      'france',
-      'italy',
-    ];
+
     return this.httpClient
       .get<CountryHttpResponse>(`${environment.countries}`)
       .pipe(
         map((resp: CountryHttpResponse): Country[] => {
           let countryList: Array<Country> = [];
           let data = resp.response;
-          data.forEach((c: { country: Country }) => {
-            if (countryCheckList.includes(c.country.name.toLowerCase())) {
-              countryList.push(c.country);
+          data.forEach((c) => {
+            if (
+              environment.defaultCountriesList.find(
+                (x: DefaultCountry) => x.name === c.name.toLowerCase()
+              )
+            ) {
+              countryList.push(c);
             }
           });
           localStorage.setItem('countries', JSON.stringify(countryList));

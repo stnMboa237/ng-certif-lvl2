@@ -2,8 +2,10 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Observable, combineLatest, map, switchMap } from 'rxjs';
 import { Country } from 'src/app/models/country.interface';
+import { DefaultCountry } from 'src/app/models/default-country.interface';
 import { TeamStandingInfo } from 'src/app/models/team-standing-info.interface';
 import { StandingService } from 'src/app/shared/service/standing.service';
+import { environment } from 'src/environments/environment.development';
 
 @Component({
   selector: 'ng-standing',
@@ -98,9 +100,12 @@ export class StandingComponent {
   protected leagueId$: Observable<number> = combineLatest({
     countryName: this.selectedCountry$,
   }).pipe(
-    switchMap(({ countryName }) =>
-      this.StandingService.getLeagueId(countryName)
-    )
+    switchMap(({ countryName }) => {
+      const leagueDescription = environment.defaultCountriesList.find(
+        (c: DefaultCountry) => c.name === countryName.toLowerCase()
+      )?.league;
+      return this.StandingService.getLeagueId(countryName, leagueDescription);
+    })
   );
 
   protected seasonYear$: Observable<number> =
