@@ -9,7 +9,6 @@ const appRoutes: Routes = [
   {
     path: 'standing/:country',
     component: StandingComponent,
-    // children: [{ path: ':id', component: LastGamesComponent }],
   },
   { path: 'fixtures/:id', component: FixturesComponent },
   { path: '**', redirectTo: '' },
