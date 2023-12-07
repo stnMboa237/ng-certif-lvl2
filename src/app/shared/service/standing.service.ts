@@ -7,6 +7,8 @@ import { Country } from 'src/app/models/country.interface';
 import { DefaultCountry } from 'src/app/models/default-country.interface';
 import { LeagueHttpResponse } from 'src/app/models/league-http-response.interface';
 import { LeagueIndexResponseBody } from 'src/app/models/league-index-response-body.interface';
+import { LeagueStanding } from 'src/app/models/league-standing.interface';
+import { StandingHttpResponse } from 'src/app/models/standing-http-response.interface';
 import { TeamStandingInfo } from 'src/app/models/team-standing-info.interface';
 import { environment } from 'src/environments/environment.development';
 
@@ -33,15 +35,15 @@ export class StandingService {
       .set('league', `${leagueId}`)
       .set('season', `${year}`);
     return this.httpClient
-      .get(`${environment.standings}`, {
+      .get<StandingHttpResponse>(`${environment.standings}`, {
         params: httpParams,
       })
       .pipe(
-        map((resp: any) => {
-          let data: any[] = resp['response'][0]['league']['standings'][0];
+        map((resp: StandingHttpResponse) => {
+          const data: LeagueStanding[] = resp.response[0].league.standings[0];
           let teamStanding: TeamStandingInfo[] = [];
           for (let i = 0; i < data.length; i++) {
-            let teamInfo: any = data[i];
+            let teamInfo: LeagueStanding = data[i];
             let t: TeamStandingInfo = {
               draw: teamInfo['all']['draw'],
               games: teamInfo['all']['played'],
