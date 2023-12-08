@@ -1,5 +1,6 @@
 export const environment = {
-  apiKey: 'fdb8b5f475d83e33a29c63543f609d20',
+  // apiKey: 'fdb8b5f475d83e33a29c63543f609d20',
+  apiKey: '86202ba88122951a7c5e81d1ee8b83dc',
   countries: 'https://v3.football.api-sports.io/countries',
   leaguesUrl: 'https://v3.football.api-sports.io/leagues',
   standings: 'https://v3.football.api-sports.io/standings',

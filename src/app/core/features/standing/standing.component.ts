@@ -36,7 +36,7 @@ import { environment } from 'src/environments/environment.development';
               </tr>
             </thead>
             <tbody>
-              <tr class="team-row" *ngFor="let teamStandingInfo of standing">
+              <tr *ngFor="let teamStandingInfo of standing">
                 <td>{{ teamStandingInfo.rank }}</td>
                 <td>
                   <img
@@ -47,9 +47,11 @@ import { environment } from 'src/environments/environment.development';
                   />
                 </td>
                 <td>
-                  <a (click)="onSelectTeam(teamStandingInfo.teamId)">{{
-                    teamStandingInfo.teamName
-                  }}</a>
+                  <a
+                    class="team-name"
+                    (click)="onSelectTeam(teamStandingInfo.teamId)"
+                    >{{ teamStandingInfo.teamName }}</a
+                  >
                 </td>
                 <td>{{ teamStandingInfo.games }}</td>
                 <td>{{ teamStandingInfo.win }}</td>
